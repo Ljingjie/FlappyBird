@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css" media="screen">
+		canvas{
+			border: 1px solid #000;
+		}
+	</style>
+</head>
+<body>
+	<canvas width="800" height="512" id="canvas"></canvas>
+</body>
+</html>
+<script src="js/bg.js"></script>
+<script src="js/pipe.js"></script>
+<script src="js/bird.js"></script>
+<script>
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+
+	var isReady = false;
+
+	var images = {
+		bg_day:"images/bg_day.png",
+		land:"images/land.png",
+		pipe_chongshang:"images/pipe_chongshang.png",
+		pipe_chongxia:"images/pipe_chongxia.png",
+		pipe2_down:"images/pipe2_down.png",
+		pipe2_up:"images/pipe2_up.png",
+		bird0_0:"images/bird0_0.png",
+		bird0_1:"images/bird0_1.png",
+		bird0_2:"images/bird0_2.png",
+		text_game_over:"images/text_game_over.png",
+		text_ready:"images/text_ready.png",
+		button_ok:"images/button_ok.png"
+	}
+	var count = 0;
+	var R = {};
+	for(var k in images){
+		R[k] = new Image();
+		R[k].src = images[k];
+		R[k].onload = function(){
+			count++;
+			if(count == Object.keys(images).length){
+				/*ctx.drawImage(R.bg_day, 0, 0, 288, 512, 0, 0, 288, 512);
+				ctx.drawImage(R.bg_day, 0, 0, 288, 512, 288, 0, 288, 512);
+				ctx.drawImage(R.bg_day, 0, 0, 288, 512, 288*2, 0, 288, 512);
+				ctx.drawImage(R.land, 0, 0, 336, 112, 0, 400, 336, 112);
+				ctx.drawImage(R.land, 0, 0, 336, 112, 336, 400, 336, 112);
+				ctx.drawImage(R.land, 0, 0, 336, 112, 336*2, 400, 336, 112);*/
+				ctx.drawImage(R.text_ready, 0, 0, 196, 62, 300, 250, 196, 62);
+				ctx.drawImage(R.button_ok, 0, 0, 80, 28, 350, 350, 80, 28);
+					console.log(isReady);
+				start();
+			}
+		}
+	}
+
+	var f = 0;
+	var score = 0;
+	var arr = [];
+	var pipeArr= [];
+	function start(){
+		var timer = setInterval(function(){
+			f++;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			for(var i = 0; i < arr.length; i++){
+				arr[i].update();
+				arr[i].render();
+			}
+			for(var i = 0; i < pipeArr.length; i++){
+				pipeArr[i].update();
+				pipeArr[i].render();
+				//碰撞检测
+				if(bird.BBx2 >= pipeArr[i].x && bird.BBy1 <= pipeArr[i].up_length && bird.BBx1 <= pipeArr[i].x+52){
+					clearInterval(timer);
+					ctx.drawImage(R.text_game_over, 0, 0, 204, 54, 300, 250, 204, 54);
+				}
+				if(bird.BBx2 >= pipeArr[i].x && bird.BBy2 >= pipeArr[i].up_length+pipeArr[i].feng && bird.BBx1 <= pipeArr[i].x+52){
+					clearInterval(timer);
+					ctx.drawImage(R.text_game_over, 0, 0, 204, 54, 300, 250, 204, 54);
+				}
+				if(bird.BBx1 > pipeArr[i].x+52 && ! pipeArr[i].isJia){
+					pipeArr[i].isJia = true;
+					score++;
+				}
+			}
+			if(bird.BBy2 > 410){
+				clearInterval(timer);
+				ctx.drawImage(R.text_game_over, 0, 0, 204, 54, 300, 250, 204, 54);
+
+			}
+			if(f % 200 == 0){
+				new Pipe();
+			}
+
+			ctx.fillStyle = "#fff";
+ 	 		ctx.font = "60px consolas";
+ 	 		ctx.fillText(score,canvas.width / 2,100);
+		},20);
+	}
+
+	new Beijing();
+	var bird = new Bird();
+	canvas.onmousedown = function(){
+		bird.fly();
+	}
+	canvas.onclick = function(){
+		isReady = true;
+	}
+</script>
